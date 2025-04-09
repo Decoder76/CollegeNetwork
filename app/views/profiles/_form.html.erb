@@ -3,7 +3,7 @@
     <div style="color: red">
       <h2><%= pluralize(profile.errors.count, "error") %> prohibited this profile from being saved:</h2>
 
-      <ul>
+      <ul class="error-messages">
         <% profile.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -13,22 +13,22 @@
 
   <div>
     <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
+    <%= form.text_field :user_id, placeholder: "Enter user ID" %>
   </div>
 
   <div>
     <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+    <%= form.text_field :name,  placeholder: "Enter user name" %>
   </div>
 
   <div>
     <%= form.label :bio, style: "display: block" %>
-    <%= form.textarea :bio %>
+    <%= form.textarea :bio,  placeholder: "About user ..."  %>
   </div>
 
   <div>
     <%= form.label :role, style: "display: block" %>
-    <%= form.number_field :role %>
+    <%= form.select :role, User.roles.keys.map { |role| [role.titleize, role] }, {}, { style: "width: 100%" } %>
   </div>
 
   <div>
