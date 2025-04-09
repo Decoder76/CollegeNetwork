@@ -1,18 +1,39 @@
 Rails.application.routes.draw do
-  resources :messages
-  resources :posts
-  resources :profiles
   devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  devise_for :users, path: '', path_names: {
+  sign_in: 'login',
+  sign_out: 'logout',
+  registration: 'signup'
+}
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get "likes/create"
+  get "likes/destroy"
+  get "comments/create"
+  get "comments/destroy"
+  
+
+  # Posts with nested comments and likes
+  resources :posts do
+    resources :comments, only: [:create, :destroy]
+    resources :likes, only: [:create, :destroy]
+  end
+
+  # Profiles nested under users
+  resources :users do
+    resource :profile, only: [:show, :edit, :update]
+  end
+
+  # Direct messaging system
+  resources :messages, only: [:index, :show, :create, :destroy]
+
+  # PWA support (optional)
+  get "manifest" => "pwa#manifest", as: :pwa_manifest
+  get "service-worker" => "pwa#service_worker", as: :pwa_service_worker
+
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Root path
+  root "posts#index"
 end
+

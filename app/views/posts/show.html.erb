@@ -8,3 +8,30 @@
 
   <%= button_to "Destroy this post", @post, method: :delete %>
 </div>
+
+<h3>Comments</h3>
+
+<%= form_with(model: [ @post, Comment.new ]) do |f| %>
+  <div class="mb-2">
+    <%= f.text_area :content, placeholder: "Write a comment...", rows: 3 %>
+  </div>
+  <%= f.submit "Post Comment" %>
+<% end %>
+
+<% @post.comments.each do |comment| %>
+  <p>
+    <strong><%= comment.user.email %>:</strong>
+    <%= comment.content %>
+    <% if comment.user == current_user %>
+      <%= link_to "Delete", [@post, comment], method: :delete, data: { confirm: "Are you sure?" } %>
+    <% end %>
+  </p>
+<% end %>
+
+<% if @post.likes.exists?(user: current_user) %>
+  <%= button_to "Unlike", post_like_path(@post, current_user.likes.find_by(post: @post)), method: :delete %>
+<% else %>
+  <%= button_to "Like", post_likes_path(@post), method: :post %>
+<% end %>
+
+<p><%= pluralize(@post.likes.count, "like") %></p>
