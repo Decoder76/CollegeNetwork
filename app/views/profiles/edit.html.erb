@@ -1,12 +1,9 @@
 <% content_for :title, "Editing profile" %>
 
 <h1>Editing profile</h1>
-
 <%= render "form", profile: @profile %>
 
-<br>
-
-<div>
-  <%= link_to "Show this profile", @profile %> |
-  <%= link_to "Back to profiles", profiles_path %>
+<div class="page-actions">
+  <%= link_to "Show this profile", @profile, class: "button" %>
+  <%= link_to "Back to profiles", profiles_path, class: "button button--ghost" %>
 </div>

@@ -1,16 +1,15 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Messages" %>
 
-<h1>Messages</h1>
+<section class="page-header">
+  <h1>Messages</h1>
+  <%= link_to "New message", new_message_path, class: "button" %>
+</section>
 
 <div id="messages">
   <% @messages.each do |message| %>
-    <%= render message %>
-    <p>
-      <%= link_to "Show this message", message %>
-    </p>
+    <article>
+      <%= render message %>
+      <p><%= link_to "Show details", message %></p>
+    </article>
   <% end %>
 </div>
-
-<%= link_to "New message", new_message_path %>

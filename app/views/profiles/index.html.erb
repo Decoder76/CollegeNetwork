@@ -1,16 +1,15 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Profiles" %>
 
-<h1>Profiles</h1>
+<section class="page-header">
+  <h1>Profiles</h1>
+  <%= link_to "New profile", new_profile_path, class: "button" %>
+</section>
 
 <div id="profiles">
   <% @profiles.each do |profile| %>
-    <%= render profile %>
-    <p>
-      <%= link_to "Show this profile", profile %>
-    </p>
+    <article>
+      <%= render profile %>
+      <p><%= link_to "Show details", profile %></p>
+    </article>
   <% end %>
 </div>
-
-<%= link_to "New profile", new_profile_path %>

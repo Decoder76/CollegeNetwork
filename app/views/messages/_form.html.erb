@@ -1,8 +1,7 @@
 <%= form_with(model: message) do |form| %>
   <% if message.errors.any? %>
-    <div style="color: red">
+    <div style="color: #ffb3c1">
       <h2><%= pluralize(message.errors.count, "error") %> prohibited this message from being saved:</h2>
-
       <ul>
         <% message.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -12,17 +11,17 @@
   <% end %>
 
   <div>
-    <%= form.label :sender_id, style: "display: block" %>
+    <%= form.label :sender_id %>
     <%= form.number_field :sender_id %>
   </div>
 
   <div>
-    <%= form.label :receiver_id, style: "display: block" %>
+    <%= form.label :receiver_id %>
     <%= form.number_field :receiver_id %>
   </div>
 
   <div>
-    <%= form.label :content, style: "display: block" %>
+    <%= form.label :content %>
     <%= form.textarea :content %>
   </div>
 

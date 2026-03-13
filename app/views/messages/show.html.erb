@@ -1,10 +1,7 @@
-<p style="color: green"><%= notice %></p>
-
 <%= render @message %>
 
-<div>
-  <%= link_to "Edit this message", edit_message_path(@message) %> |
-  <%= link_to "Back to messages", messages_path %>
-
-  <%= button_to "Destroy this message", @message, method: :delete %>
+<div class="page-actions">
+  <%= link_to "Edit", edit_message_path(@message), class: "button" %>
+  <%= link_to "Back", messages_path, class: "button button--ghost" %>
+  <%= button_to "Delete", @message, method: :delete %>
 </div>

@@ -1,10 +1,237 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+:root {
+  --bg: #09090f;
+  --surface: #131320;
+  --surface-border: #24243a;
+  --text: #f5f7ff;
+  --muted: #a0a7c0;
+  --primary: #6a7dff;
+  --primary-2: #9c6dff;
+  --danger: #ff5f7a;
+  --success: #22c55e;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 20% 10%, #1b1b2f 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+a {
+  color: #b3bcff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #d5daff;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--surface-border);
+  backdrop-filter: blur(10px);
+  background: rgba(11, 12, 22, 0.75);
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.brand--glitch {
+  position: relative;
+  color: #fff;
+}
+
+.brand--glitch::before,
+.brand--glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.brand--glitch::before {
+  color: #6be4ff;
+  transform: translate(1px, 0);
+}
+
+.brand--glitch::after {
+  color: #ff6bd8;
+  transform: translate(-1px, 0);
+}
+
+.topbar__nav,
+.topbar__auth {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.topbar__user {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.button,
+input[type="submit"],
+button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  background: linear-gradient(120deg, var(--primary), var(--primary-2));
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button--ghost {
+  background: transparent;
+  border-color: #3d3f5f;
+  color: #e5e9ff;
+}
+
+.app-shell {
+  max-width: 980px;
+  margin: 1rem auto 2rem;
+  padding: 0 1rem;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: 0.02em;
+}
+
+#posts,
+#profiles,
+#messages {
+  display: grid;
+  gap: 1rem;
+}
+
+[id^="post_"],
+[id^="profile_"],
+[id^="message_"] {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0));
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+form {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+form div {
+  margin-bottom: 0.8rem;
+}
+
+label {
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+  display: inline-block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+  width: 100%;
+  border: 1px solid #373a54;
+  border-radius: 10px;
+  background: #0f1020;
+  color: var(--text);
+  padding: 0.6rem;
+}
+
+.flash {
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+}
+
+.flash--notice {
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #9ff3bb;
+}
+
+.flash--alert {
+  border-color: rgba(255, 95, 122, 0.45);
+  color: #ffb3c1;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .topbar__nav,
+  .topbar__auth {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.page-actions form {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#posts article,
+#profiles article,
+#messages article {
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 1rem;
+  background: rgba(8, 9, 18, 0.45);
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
