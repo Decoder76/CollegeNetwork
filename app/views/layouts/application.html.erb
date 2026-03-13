@@ -10,18 +10,39 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="topbar">
+      <%= link_to "College Network", posts_path, class: "brand brand--glitch", data: { text: "College Network" } %>
+
+      <nav class="topbar__nav" aria-label="Primary">
+        <%= link_to "Posts", posts_path %>
+        <%= link_to "Profiles", profiles_path %>
+        <%= link_to "Messages", messages_path %>
+      </nav>
+
+      <div class="topbar__auth">
+        <% if user_signed_in? %>
+          <span class="topbar__user"><%= current_user.email %></span>
+          <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "button button--ghost" %>
+        <% else %>
+          <%= link_to "Log in", new_user_session_path, class: "button button--ghost" %>
+          <%= link_to "Sign up", new_user_registration_path, class: "button" %>
+        <% end %>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <% flash.each do |type, message| %>
+        <p class="flash flash--<%= type %>"><%= message %></p>
+      <% end %>
+      <%= yield %>
+    </main>
   </body>
 </html>

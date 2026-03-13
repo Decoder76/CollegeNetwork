@@ -1,10 +1,7 @@
-<p style="color: green"><%= notice %></p>
-
 <%= render @profile %>
 
-<div>
-  <%= link_to "Edit this profile", edit_profile_path(@profile) %> |
-  <%= link_to "Back to profiles", profiles_path %>
-
-  <%= button_to "Destroy this profile", @profile, method: :delete %>
+<div class="page-actions">
+  <%= link_to "Edit", edit_profile_path(@profile), class: "button" %>
+  <%= link_to "Back", profiles_path, class: "button button--ghost" %>
+  <%= button_to "Delete", @profile, method: :delete %>
 </div>
