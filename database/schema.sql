@@ -131,6 +131,9 @@ CREATE TABLE connections (
   UNIQUE (requester_id, addressee_id)
 );
 
+CREATE UNIQUE INDEX uniq_connections_unordered_pair
+  ON connections (LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id));
+
 CREATE TABLE follows (
   follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   followee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -255,6 +258,10 @@ CREATE TABLE messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
   sender_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_messages_conversation_sender_member
+    FOREIGN KEY (conversation_id, sender_user_id)
+    REFERENCES conversation_members(conversation_id, user_id)
+    ON DELETE RESTRICT,
   body TEXT NOT NULL,
   attachments JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
