@@ -1,5 +1,14 @@
 Rails.application.routes.draw do
-  resources :messages
+  resources :conversations, only: %i[index show new create] do
+    resources :messages, only: %i[create update destroy]
+    post :invitations, to: "conversation_invitations#create"
+    patch "invitations/:invitation_id", to: "conversation_invitations#update", as: :invitation
+    post :leave_requests, to: "conversation_leave_requests#create"
+    patch "leave_requests/:leave_request_id", to: "conversation_leave_requests#update", as: :leave_request
+  end
+  get "invitations", to: "conversation_invitations#index", as: :invitations
+  patch "invitations/:id", to: "conversation_invitations#respond", as: :respond_to_invitation
+  resources :connections, only: %i[index create update destroy]
   resources :posts
   resources :profiles
   devise_for :users

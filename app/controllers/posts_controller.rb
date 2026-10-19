@@ -1,9 +1,11 @@
 class PostsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_post, only: %i[ show edit update destroy ]
+  before_action :authorize_post, only: %i[ edit update destroy ]
 
   # GET /posts or /posts.json
   def index
-    @posts = Post.all
+    @posts = Post.includes(:user).all
   end
 
   # GET /posts/1 or /posts/1.json
@@ -21,7 +23,7 @@ class PostsController < ApplicationController
 
   # POST /posts or /posts.json
   def create
-    @post = Post.new(post_params)
+    @post = current_user.posts.build(post_params)
 
     respond_to do |format|
       if @post.save
@@ -63,8 +65,12 @@ class PostsController < ApplicationController
       @post = Post.find(params.expect(:id))
     end
 
+    def authorize_post
+      head :not_found unless @post.user_id == current_user.id
+    end
+
     # Only allow a list of trusted parameters through.
     def post_params
-      params.expect(post: [ :user_id, :content ])
+      params.expect(post: [ :content ])
     end
 end

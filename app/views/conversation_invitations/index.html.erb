@@ -1,0 +1,17 @@
+<% content_for :title, "Invitations" %>
+
+<section class="page-header">
+  <h1>Conversation invitations</h1>
+</section>
+
+<% @invitations.each do |invitation| %>
+  <article>
+    <p><%= invitation.invited_by.name %> invited you to join a conversation.</p>
+    <%= button_to "Accept", respond_to_invitation_path(invitation), method: :patch, params: { decision: "accept" } %>
+    <%= button_to "Decline", respond_to_invitation_path(invitation), method: :patch, params: { decision: "decline" } %>
+  </article>
+<% end %>
+
+<% if @invitations.empty? %>
+  <p>You have no conversation invitations.</p>
+<% end %>

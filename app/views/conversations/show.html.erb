@@ -1,0 +1,90 @@
+<% content_for :title, "Conversation" %>
+
+<section class="page-header">
+  <h1><%= @conversation.active_users.map(&:name).join(", ") %></h1>
+  <%= link_to "All conversations", conversations_path, class: "button button--ghost" %>
+</section>
+
+<section aria-labelledby="members-heading">
+  <h2 id="members-heading">Participants</h2>
+  <p><%= @conversation.active_users.map(&:name).join(", ") %></p>
+</section>
+
+<% if @invitations_to_approve.any? %>
+  <section aria-labelledby="approval-heading">
+    <h2 id="approval-heading">Join requests awaiting your approval</h2>
+    <% @invitations_to_approve.each do |invitation| %>
+      <p>
+        <%= invitation.invited_by.name %> invited <%= invitation.invitee.name %>.
+        <%= button_to "Approve", conversation_invitation_path(@conversation, invitation), method: :patch, params: { decision: "approve" } %>
+        <%= button_to "Decline", conversation_invitation_path(@conversation, invitation), method: :patch, params: { decision: "decline" } %>
+      </p>
+    <% end %>
+  </section>
+<% end %>
+
+<% if @pending_leave_requests.any? %>
+  <section aria-labelledby="leave-approval-heading">
+    <h2 id="leave-approval-heading">Requests to leave</h2>
+    <% @pending_leave_requests.each do |request| %>
+      <p>
+        <%= request.requester.name %> asked to leave this conversation.
+        <%= button_to "Approve departure", conversation_leave_request_path(@conversation, request), method: :patch, params: { decision: "approve" } %>
+        <%= button_to "Decline", conversation_leave_request_path(@conversation, request), method: :patch, params: { decision: "decline" } %>
+      </p>
+    <% end %>
+  </section>
+<% end %>
+
+<% if @my_leave_request %>
+  <p>Your request to leave is awaiting approval.</p>
+<% elsif @conversation.active_participants.count > 1 %>
+  <%= button_to "Request to leave conversation", conversation_leave_requests_path(@conversation), method: :post %>
+<% end %>
+
+<% inviteable_users = @users.where.not(id: @pending_invitee_ids) %>
+<% if inviteable_users.exists? %>
+  <section aria-labelledby="invite-heading">
+    <h2 id="invite-heading">Invite someone</h2>
+    <%= form_with url: conversation_invitations_path(@conversation), method: :post do |form| %>
+      <div>
+        <%= form.label :invitee_id, "User" %>
+        <%= form.collection_select :invitee_id, inviteable_users, :id, :name, { prompt: "Select a user" }, required: true %>
+      </div>
+      <div><%= form.submit "Send invitation" %></div>
+    <% end %>
+    <% if current_user != @conversation.creator %>
+      <p>The conversation owner must approve your invitation before the person can join.</p>
+    <% end %>
+  </section>
+<% end %>
+
+<section aria-labelledby="messages-heading">
+  <h2 id="messages-heading">Messages</h2>
+  <div id="messages">
+    <% @messages.each do |message| %>
+      <article id="<%= dom_id message %>">
+        <p><strong><%= message.sender.name %></strong> <small><%= l(message.created_at, format: :long) %></small></p>
+        <p><%= simple_format(message.content) %></p>
+        <% if message.sender_id == current_user.id %>
+          <%= form_with model: [ @conversation, message ], method: :patch do |form| %>
+            <div>
+              <%= form.label :content, "Edit your message" %>
+              <%= form.text_area :content, required: true %>
+            </div>
+            <%= form.submit "Save edit" %>
+          <% end %>
+          <%= button_to "Delete message", conversation_message_path(@conversation, message), method: :delete %>
+        <% end %>
+      </article>
+    <% end %>
+  </div>
+
+  <%= form_with model: [ @conversation, Message.new ] do |form| %>
+    <div>
+      <%= form.label :content, "Write a message" %>
+      <%= form.text_area :content, required: true %>
+    </div>
+    <%= form.submit "Send message" %>
+  <% end %>
+</section>

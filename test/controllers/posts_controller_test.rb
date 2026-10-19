@@ -1,8 +1,19 @@
 require "test_helper"
 
 class PostsControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
     @post = posts(:one)
+    sign_in users(:one)
+  end
+
+  test "requires authentication" do
+    sign_out users(:one)
+
+    get posts_url
+
+    assert_redirected_to new_user_session_url
   end
 
   test "should get index" do
@@ -17,10 +28,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create post" do
     assert_difference("Post.count") do
-      post posts_url, params: { post: { content: @post.content, user_id: @post.user_id } }
+      post posts_url, params: { post: { content: @post.content, user_id: users(:two).id } }
     end
 
     assert_redirected_to post_url(Post.last)
+    assert_equal users(:one), Post.last.user
   end
 
   test "should show post" do
@@ -33,9 +45,24 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "cannot edit another user's post" do
+    get edit_post_url(posts(:two))
+
+    assert_response :not_found
+  end
+
   test "should update post" do
-    patch post_url(@post), params: { post: { content: @post.content, user_id: @post.user_id } }
+    patch post_url(@post), params: { post: { content: "Updated content", user_id: users(:two).id } }
     assert_redirected_to post_url(@post)
+    assert_equal "Updated content", @post.reload.content
+    assert_equal users(:one), @post.user
+  end
+
+  test "cannot update another user's post" do
+    patch post_url(posts(:two)), params: { post: { content: "Changed content" } }
+
+    assert_response :not_found
+    assert_not_equal "Changed content", posts(:two).reload.content
   end
 
   test "should destroy post" do
@@ -44,5 +71,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to posts_url
+  end
+
+  test "cannot destroy another user's post" do
+    assert_no_difference("Post.count") do
+      delete post_url(posts(:two))
+    end
+
+    assert_response :not_found
   end
 end

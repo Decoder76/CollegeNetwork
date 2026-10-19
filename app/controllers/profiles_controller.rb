@@ -1,9 +1,11 @@
 class ProfilesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_profile, only: %i[ show edit update destroy ]
+  before_action :authorize_profile, only: %i[ edit update destroy ]
 
   # GET /profiles or /profiles.json
   def index
-    @profiles = Profile.all
+    @profiles = Profile.includes(:user).all
   end
 
   # GET /profiles/1 or /profiles/1.json
@@ -21,7 +23,7 @@ class ProfilesController < ApplicationController
 
   # POST /profiles or /profiles.json
   def create
-    @profile = Profile.new(profile_params)
+    @profile = Profile.new(profile_params.merge(user: current_user))
 
     respond_to do |format|
       if @profile.save
@@ -63,8 +65,12 @@ class ProfilesController < ApplicationController
       @profile = Profile.find(params.expect(:id))
     end
 
+    def authorize_profile
+      head :not_found unless @profile.user_id == current_user.id
+    end
+
     # Only allow a list of trusted parameters through.
     def profile_params
-      params.expect(profile: [ :user_id, :name, :bio, :role ])
+      params.expect(profile: [ :name, :bio, :role ])
     end
 end

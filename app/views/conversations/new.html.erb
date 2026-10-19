@@ -1,0 +1,18 @@
+<% content_for :title, "Start a conversation" %>
+
+<section class="page-header">
+  <h1>Start a conversation</h1>
+</section>
+
+<% if @error %>
+  <p class="flash flash--alert"><%= @error %></p>
+<% end %>
+
+<%= form_with scope: :conversation, url: conversations_path do |form| %>
+  <div>
+    <%= form.label :recipient_id, "Start with" %>
+    <%= form.collection_select :recipient_id, @users, :id, :name, { prompt: "Select a user" }, required: true %>
+  </div>
+
+  <div><%= form.submit "Start conversation" %></div>
+<% end %>

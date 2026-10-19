@@ -1,0 +1,24 @@
+<% content_for :title, "Conversations" %>
+
+<section class="page-header">
+  <h1>Your conversations</h1>
+  <%= link_to "Start a conversation", new_conversation_path, class: "button" %>
+</section>
+
+<div id="conversations">
+  <% @conversations.each do |conversation| %>
+    <% latest_message = conversation.messages.max_by(&:created_at) %>
+    <article>
+      <h2><%= link_to conversation.active_users.map(&:name).join(", "), conversation_path(conversation) %></h2>
+      <% if latest_message %>
+        <p><strong><%= latest_message.sender.name %>:</strong> <%= truncate(latest_message.content, length: 120) %></p>
+      <% else %>
+        <p>No messages yet.</p>
+      <% end %>
+    </article>
+  <% end %>
+</div>
+
+<% if @conversations.empty? %>
+  <p>You have no conversations yet. Start one to message another user privately.</p>
+<% end %>

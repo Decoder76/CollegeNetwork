@@ -1,70 +1,49 @@
 class MessagesController < ApplicationController
-  before_action :set_message, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!
+  before_action :set_conversation
+  before_action :set_message, only: %i[update destroy]
+  before_action :authorize_message, only: %i[update destroy]
 
-  # GET /messages or /messages.json
-  def index
-    @messages = Message.all
-  end
-
-  # GET /messages/1 or /messages/1.json
-  def show
-  end
-
-  # GET /messages/new
-  def new
-    @message = Message.new
-  end
-
-  # GET /messages/1/edit
-  def edit
-  end
-
-  # POST /messages or /messages.json
   def create
-    @message = Message.new(message_params)
+    @message = @conversation.messages.build(message_params.merge(sender: current_user))
 
-    respond_to do |format|
-      if @message.save
-        format.html { redirect_to @message, notice: "Message was successfully created." }
-        format.json { render :show, status: :created, location: @message }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
+    if @message.save
+      redirect_to @conversation, notice: "Message sent."
+    else
+      redirect_to @conversation, alert: @message.errors.full_messages.to_sentence
     end
   end
 
-  # PATCH/PUT /messages/1 or /messages/1.json
   def update
-    respond_to do |format|
-      if @message.update(message_params)
-        format.html { redirect_to @message, notice: "Message was successfully updated." }
-        format.json { render :show, status: :ok, location: @message }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
+    if @message.update(message_params)
+      redirect_to @conversation, notice: "Message updated."
+    else
+      redirect_to @conversation, alert: @message.errors.full_messages.to_sentence
     end
   end
 
-  # DELETE /messages/1 or /messages/1.json
   def destroy
     @message.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to messages_path, status: :see_other, notice: "Message was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    redirect_to @conversation, notice: "Message deleted."
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_message
-      @message = Message.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def message_params
-      params.expect(message: [ :sender_id, :receiver_id, :content ])
-    end
+  def set_conversation
+    @conversation = Conversation.joins(:active_participants)
+      .where(conversation_participants: { user_id: current_user.id, left_at: nil })
+      .find(params.expect(:conversation_id))
+  end
+
+  def set_message
+    @message = @conversation.messages.find(params.expect(:id))
+  end
+
+  def authorize_message
+    head :not_found unless @message.sender_id == current_user.id
+  end
+
+  def message_params
+    params.expect(message: [ :content ])
+  end
 end

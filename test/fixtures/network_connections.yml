@@ -1,0 +1,5 @@
+one:
+  requester: two
+  recipient: three
+  status: accepted
+  accepted_at: <%= Time.current %>

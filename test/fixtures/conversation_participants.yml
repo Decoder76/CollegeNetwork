@@ -1,0 +1,9 @@
+one:
+  conversation: one
+  user: one
+  joined_at: <%= Time.current %>
+
+two:
+  conversation: one
+  user: two
+  joined_at: <%= Time.current %>

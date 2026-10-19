@@ -1,0 +1,50 @@
+<% content_for :title, "Connections" %>
+
+<section class="page-header">
+  <h1>Your network</h1>
+</section>
+
+<% if @users.any? %>
+  <section aria-labelledby="request-heading">
+    <h2 id="request-heading">Connect with a user</h2>
+    <%= form_with url: connections_path, method: :post do |form| %>
+      <div>
+        <%= form.label :recipient_id, "User" %>
+        <%= form.collection_select :recipient_id, @users, :id, :name, { prompt: "Select a user" }, required: true %>
+      </div>
+      <%= form.submit "Send connection request" %>
+    <% end %>
+  </section>
+<% end %>
+
+<section aria-labelledby="connections-heading">
+  <h2 id="connections-heading">Connections</h2>
+  <% @connections.each do |connection| %>
+    <% other_user = connection.requester_id == current_user.id ? connection.recipient : connection.requester %>
+    <p>
+      <%= other_user.name %>
+      <%= button_to "Remove connection", connection_path(connection), method: :delete %>
+    </p>
+  <% end %>
+  <% if @connections.empty? %>
+    <p>You have no connections yet.</p>
+  <% end %>
+</section>
+
+<section aria-labelledby="incoming-heading">
+  <h2 id="incoming-heading">Incoming requests</h2>
+  <% @incoming_requests.each do |connection| %>
+    <p>
+      <%= connection.requester.name %>
+      <%= button_to "Accept", connection_path(connection), method: :patch, params: { decision: "accept" } %>
+      <%= button_to "Decline", connection_path(connection), method: :patch, params: { decision: "decline" } %>
+    </p>
+  <% end %>
+</section>
+
+<section aria-labelledby="outgoing-heading">
+  <h2 id="outgoing-heading">Sent requests</h2>
+  <% @outgoing_requests.each do |connection| %>
+    <p>Waiting for <%= connection.recipient.name %> to respond.</p>
+  <% end %>
+</section>

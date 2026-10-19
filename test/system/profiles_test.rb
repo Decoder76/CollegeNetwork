@@ -3,6 +3,7 @@ require "application_system_test_case"
 class ProfilesTest < ApplicationSystemTestCase
   setup do
     @profile = profiles(:one)
+    sign_in_as(users(:one))
   end
 
   test "visiting the index" do
@@ -16,8 +17,7 @@ class ProfilesTest < ApplicationSystemTestCase
 
     fill_in "Bio", with: @profile.bio
     fill_in "Name", with: @profile.name
-    fill_in "Role", with: @profile.role
-    fill_in "User", with: @profile.user_id
+    select "Faculty", from: "Role"
     click_on "Create Profile"
 
     assert_text "Profile was successfully created"
@@ -26,12 +26,11 @@ class ProfilesTest < ApplicationSystemTestCase
 
   test "should update Profile" do
     visit profile_url(@profile)
-    click_on "Edit this profile", match: :first
+    click_on "Edit", match: :first
 
     fill_in "Bio", with: @profile.bio
     fill_in "Name", with: @profile.name
-    fill_in "Role", with: @profile.role
-    fill_in "User", with: @profile.user_id
+    select "Faculty", from: "Role"
     click_on "Update Profile"
 
     assert_text "Profile was successfully updated"
@@ -40,8 +39,17 @@ class ProfilesTest < ApplicationSystemTestCase
 
   test "should destroy Profile" do
     visit profile_url(@profile)
-    click_on "Destroy this profile", match: :first
+    click_on "Delete", match: :first
 
     assert_text "Profile was successfully destroyed"
+  end
+
+  private
+
+  def sign_in_as(user)
+    visit new_user_session_url
+    fill_in "Email", with: user.email
+    fill_in "Password", with: "password123"
+    click_button "Log in"
   end
 end
